@@ -29,12 +29,10 @@ func ApplyResouceToConfig(cfg interface{}) error {
 		return nil
 	}
 
-	if(cfg.(config.IResourceConfigCallback) != nil){
-		if objInterface, ok := cfg.(config.IResourceConfigCallback); ok {
-			err := objInterface.ApplyResources(agentRes)
-			if err != nil {
-				return err
-			}
+	if objInterface, ok := cfg.(config.IResourceConfigCallback); ok {
+		err := objInterface.ApplyResources(agentRes)
+		if err != nil {
+			return err
 		}
 	}
 
@@ -46,19 +44,15 @@ func ApplyResouceToConfig(cfg interface{}) error {
 	}
 
 	// Look for Validate method on struct properties and invoke it
-	for i := 0; i < v.NumField(); i++ {
+	for i := 0; i < v.NumField()-1; i++ {
 		if v.Field(i).CanInterface() {
 			fieldInterface := v.Field(i).Interface()
-			if(cfg.(config.IResourceConfigCallback) != nil){
-				if objInterface, ok := fieldInterface.(config.IResourceConfigCallback); ok {
-					err := ApplyResouceToConfig(objInterface)
-					if err != nil {
-						return err
-					}
+			if objInterface, ok := fieldInterface.(config.IResourceConfigCallback); ok {
+				err := ApplyResouceToConfig(objInterface)
+				if err != nil {
+					return err
 				}
-
 			}
-
 		}
 	}
 	return nil
