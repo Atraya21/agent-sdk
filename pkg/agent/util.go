@@ -29,10 +29,12 @@ func ApplyResouceToConfig(cfg interface{}) error {
 		return nil
 	}
 
-	if objInterface, ok := cfg.(config.IResourceConfigCallback); ok {
-		err := objInterface.ApplyResources(agentRes)
-		if err != nil {
-			return err
+	if(cfg.(config.IResourceConfigCallback) != nil){
+		if objInterface, ok := cfg.(config.IResourceConfigCallback); ok {
+			err := objInterface.ApplyResources(agentRes)
+			if err != nil {
+				return err
+			}
 		}
 	}
 
@@ -47,12 +49,16 @@ func ApplyResouceToConfig(cfg interface{}) error {
 	for i := 0; i < v.NumField(); i++ {
 		if v.Field(i).CanInterface() {
 			fieldInterface := v.Field(i).Interface()
-			if objInterface, ok := fieldInterface.(config.IResourceConfigCallback); ok {
-				err := ApplyResouceToConfig(objInterface)
-				if err != nil {
-					return err
+			if(cfg.(config.IResourceConfigCallback) != nil){
+				if objInterface, ok := fieldInterface.(config.IResourceConfigCallback); ok {
+					err := ApplyResouceToConfig(objInterface)
+					if err != nil {
+						return err
+					}
 				}
+
 			}
+
 		}
 	}
 	return nil
